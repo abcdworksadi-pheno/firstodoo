@@ -1,0 +1,245 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <record id="view_task_planning_form" model="ir.ui.view">
+            <field name="name">task.planning.form</field>
+            <field name="model">task.planning</field>
+            <field name="arch" type="xml">
+                <form string="Tâche Planifiée">
+                    <header>
+                        <button name="action_plan" string="Planifier" type="object" class="btn-primary"/>
+                        <button name="action_start" string="Démarrer" type="object" class="btn-primary"/>
+                        <button name="action_complete" string="Compléter" type="object" class="btn-primary"/>
+                        <button name="action_reset" string="Réinitialiser" type="object"/>
+                        <button name="action_cancel" string="Annuler" type="object"/>
+                        <field name="state" widget="statusbar"/>
+                    </header>
+                    <sheet>
+                        <div class="oe_title">
+                            <h1>
+                                <field name="name" placeholder="Titre de la tâche"/>
+                            </h1>
+                        </div>
+                        <group>
+                            <group string="Informations générales">
+                                <field name="priority_id"/>
+                                <field name="assigned_to"/>
+                                <field name="project_id"/>
+                                <field name="tags" widget="many2many_tags"/>
+                            </group>
+                            <group string="Statut">
+                                <field name="completion_percentage" widget="progressbar"/>
+                                <field name="created_by" readonly="1"/>
+                                <field name="created_date" readonly="1"/>
+                            </group>
+                        </group>
+                        <notebook>
+                            <page string="Planification">
+                                <group>
+                                    <group string="Dates planifiées">
+                                        <field name="scheduled_date"/>
+                                        <field name="deadline"/>
+                                        <field name="scheduled_start_time" widget="float_time"/>
+                                        <field name="scheduled_end_time" widget="float_time"/>
+                                        <field name="duration_hours" readonly="1"/>
+                                    </group>
+                                    <group string="Dates réelles">
+                                        <field name="start_date"/>
+                                        <field name="end_date"/>
+                                    </group>
+                                </group>
+                            </page>
+                            <page string="Durées">
+                                <group>
+                                    <group string="Estimation">
+                                        <field name="estimated_hours"/>
+                                        <field name="actual_hours"/>
+                                    </group>
+                                </group>
+                            </page>
+                            <page string="Description">
+                                <field name="description" nolabel="1"/>
+                            </page>
+                            <page string="Sous-tâches">
+                                <field name="subtask_ids" nolabel="1">
+                                    <list>
+                                        <field name="name"/>
+                                        <field name="state"/>
+                                        <field name="assigned_to"/>
+                                        <field name="scheduled_date"/>
+                                    </list>
+                                    <form>
+                                        <field name="name"/>
+                                        <field name="state"/>
+                                        <field name="assigned_to"/>
+                                        <field name="scheduled_date"/>
+                                    </form>
+                                </field>
+                            </page>
+                            <page string="Rappels">
+                                <group>
+                                    <field name="send_reminder"/>
+                                    <field name="reminder_days"/>
+                                </group>
+                            </page>
+                        </notebook>
+                    </sheet>
+                    <div class="oe_chatter">
+                        <field name="message_follower_ids" widget="mail_followers"/>
+                        <field name="activity_ids" widget="mail_activity"/>
+                        <field name="message_ids" widget="mail_thread"/>
+                    </div>
+                </form>
+            </field>
+        </record>
+
+        <!-- Vue liste des tâches -->
+        <record id="view_task_planning_list" model="ir.ui.view">
+            <field name="name">task.planning.list</field>
+            <field name="model">task.planning</field>
+            <field name="arch" type="xml">
+                <list string="Tâches Planifiées" decoration-success="state == 'completed'" decoration-info="state == 'in_progress'" decoration-danger="state == 'cancelled'">
+                    <field name="name"/>
+                    <field name="assigned_to"/>
+                    <field name="priority_id"/>
+                    <field name="scheduled_date"/>
+                    <field name="deadline"/>
+                    <field name="state"/>
+                    <field name="completion_percentage" widget="progressbar"/>
+                </list>
+            </field>
+        </record>
+
+        <!-- Vue kanban des tâches -->
+        <record id="view_task_planning_kanban" model="ir.ui.view">
+            <field name="name">task.planning.kanban</field>
+            <field name="model">task.planning</field>
+            <field name="arch" type="xml">
+                <kanban default_group_by="state" class="o_kanban_small_column">
+                    <field name="id"/>
+                    <field name="name"/>
+                    <field name="state"/>
+                    <field name="priority_id"/>
+                    <field name="assigned_to"/>
+                    <field name="completion_percentage"/>
+                    <field name="deadline"/>
+                    <templates>
+                        <t t-name="kanban-box">
+                            <div class="oe_kanban_card">
+                                <div class="oe_kanban_content">
+                                    <strong><field name="name"/></strong>
+                                    <br/>
+                                    <small>Assigné à: <field name="assigned_to"/></small>
+                                    <br/>
+                                    <small>Priorité: <field name="priority_id"/></small>
+                                    <br/>
+                                    <small>Date limite: <field name="deadline"/></small>
+                                    <br/>
+                                    <div class="oe_kanban_footer_left">
+                                        <field name="completion_percentage" widget="progressbar"/>
+                                    </div>
+                                </div>
+                            </div>
+                        </t>
+                    </templates>
+                </kanban>
+            </field>
+        </record>
+
+        <!-- Vue calendrier -->
+        <record id="view_task_planning_calendar" model="ir.ui.view">
+            <field name="name">task.planning.calendar</field>
+            <field name="model">task.planning</field>
+            <field name="arch" type="xml">
+                <calendar string="Calendrier des Tâches" date_start="scheduled_date" date_stop="deadline" color="priority_id">
+                    <field name="name"/>
+                    <field name="assigned_to"/>
+                    <field name="state"/>
+                </calendar>
+            </field>
+        </record>
+
+        <!-- Recherche et filtres -->
+        <record id="view_task_planning_search" model="ir.ui.view">
+            <field name="name">task.planning.search</field>
+            <field name="model">task.planning</field>
+            <field name="arch" type="xml">
+                <search string="Rechercher une tâche">
+                    <field name="name" string="Nom de la tâche"/>
+                    <field name="assigned_to"/>
+                    <field name="project_id"/>
+                    <field name="priority_id"/>
+                    <separator/>
+                    <filter name="filter_planned" string="Planifiées" domain="[('state', '=', 'planned')]"/>
+                    <filter name="filter_in_progress" string="En cours" domain="[('state', '=', 'in_progress')]"/>
+                    <filter name="filter_completed" string="Complétées" domain="[('state', '=', 'completed')]"/>
+                    <filter name="filter_cancelled" string="Annulées" domain="[('state', '=', 'cancelled')]"/>
+                    <separator/>
+                    <filter name="filter_my_tasks" string="Mes tâches" domain="[('assigned_to', '=', uid)]"/>
+                    <filter name="filter_overdue" string="En retard" domain="[('deadline', '&lt;', context_today()), ('state', '!=', 'completed')]"/>
+                    <separator/>
+                    <group expand="0" string="Grouper par">
+                        <filter name="group_by_state" string="État" context="{'group_by': 'state'}"/>
+                        <filter name="group_by_assigned" string="Assigné à" context="{'group_by': 'assigned_to'}"/>
+                        <filter name="group_by_priority" string="Priorité" context="{'group_by': 'priority_id'}"/>
+                        <filter name="group_by_project" string="Projet" context="{'group_by': 'project_id'}"/>
+                    </group>
+                </search>
+            </field>
+        </record>
+
+        <!-- Vues pour les priorités -->
+        <record id="view_task_priority_form" model="ir.ui.view">
+            <field name="name">task.priority.form</field>
+            <field name="model">task.priority</field>
+            <field name="arch" type="xml">
+                <form string="Priorité de Tâche">
+                    <group>
+                        <field name="name"/>
+                        <field name="sequence"/>
+                        <field name="color"/>
+                        <field name="description"/>
+                    </group>
+                </form>
+            </field>
+        </record>
+
+        <record id="view_task_priority_list" model="ir.ui.view">
+            <field name="name">task.priority.list</field>
+            <field name="model">task.priority</field>
+            <field name="arch" type="xml">
+                <list string="Priorités de Tâche" editable="bottom">
+                    <field name="name"/>
+                    <field name="sequence"/>
+                    <field name="color"/>
+                </list>
+            </field>
+        </record>
+
+        <!-- Vues pour les étiquettes -->
+        <record id="view_task_tag_form" model="ir.ui.view">
+            <field name="name">task.tag.form</field>
+            <field name="model">task.tag</field>
+            <field name="arch" type="xml">
+                <form string="Étiquette de Tâche">
+                    <group>
+                        <field name="name"/>
+                        <field name="color"/>
+                        <field name="description"/>
+                    </group>
+                </form>
+            </field>
+        </record>
+
+        <record id="view_task_tag_list" model="ir.ui.view">
+            <field name="name">task.tag.list</field>
+            <field name="model">task.tag</field>
+            <field name="arch" type="xml">
+                <list string="Étiquettes de Tâche" editable="bottom">
+                    <field name="name"/>
+                    <field name="color"/>
+                </list>
+            </field>
+        </record>
+    </data>
+</odoo>
