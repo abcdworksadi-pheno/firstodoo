@@ -32,7 +32,7 @@ class sale_stock_check(models.Model):
 
                 if qty_ordered > qty_available:
                     raise UserError(_(
-                        "hello Stock insuffisant pour le produit '%s'.\n"
+                        "hello sir Stock insuffisant pour le produit '%s'.\n"
                         "Demandé : %s\nDisponible : %s"
                     ) % (product.display_name, qty_ordered, qty_available))
 
