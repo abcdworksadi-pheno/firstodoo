@@ -2,8 +2,7 @@ name: Deploy Odoo
 
 on:
   push:
-    branches:
-      - main
+    branches: ["main"]
 
 jobs:
   deploy:
@@ -13,14 +12,12 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v3
 
-      - name: Deploy on server
+      - name: Copier les fichiers sur le serveur
         run: |
-          echo "$SSH_PRIVATE_KEY" > private_key
-          chmod 600 private_key
+          rsync -avz --delete ./ $HOME/firstodoo/
 
-          ssh -o StrictHostKeyChecking=no -i private_key $SSH_USER@$SSH_HOST "
-            cd $APP_PATH &&
-            git pull &&
-            docker compose down &&
-            docker compose up -d --build
-          "
+      - name: Redéployer Odoo
+        run: |
+          cd $HOME/firstodoo
+          docker compose down
+          docker compose up -d --build
