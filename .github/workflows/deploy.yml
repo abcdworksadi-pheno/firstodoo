@@ -79,7 +79,7 @@ jobs:
 
           echo "Building new containers..."
           for i in {1..5}; do
-            docker compose up -d --build && break
+            docker-compose up -d --build && break
             echo "Retrying build ($i/5)..."
             sleep 3
           done
