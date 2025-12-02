@@ -4,24 +4,24 @@
 services:
   db:
     image: postgres:15
-    container_name: odoo18-test-db
+    container_name: odoo-test-db
     environment:
-      POSTGRES_DB: odoo18
-      POSTGRES_USER: odoo18
-      POSTGRES_PASSWORD: odoo18
+      POSTGRES_DB: odoo
+      POSTGRES_USER: odoo
+      POSTGRES_PASSWORD: odoo
     volumes:
       - test-db-data:/var/lib/postgresql/data
     networks:
       - test-network
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U odoo18"]
+      test: ["CMD-SHELL", "pg_isready -U odoo"]
       interval: 5s
       timeout: 5s
       retries: 5
 
   odoo:
     image: odoo:18.0
-    container_name: odoo18-test
+    container_name: odoo-test
     depends_on:
       db:
         condition: service_healthy
@@ -30,11 +30,11 @@ services:
     environment:
       DB_HOST: db
       DB_PORT: 5432
-      DB_USER: odoo18
-      DB_PASSWORD: odoo18
-      DB_NAME: odoo18
+      DB_USER: odoo
+      DB_PASSWORD: odoo
+      DB_NAME: odoo
     volumes:
-      - odoo18-test-data:/var/lib/odoo
+      - odoo-test-data:/var/lib/odoo
       - ./custom_addons:/mnt/extra-addons
     networks:
       - test-network
@@ -42,16 +42,16 @@ services:
       odoo
       --db_host=db
       --db_port=5432
-      --db_user=odoo18
-      --db_password=odoo18
-      --database=odoo18
+      --db_user=odoo
+      --db_password=odoo
+      --database=odoo
       --addons-path=/mnt/extra-addons
       --init=task_planning,employee_mood,sale_stock_check
       --stop-after-init
 
 volumes:
   test-db-data:
-  odoo18-test-data:
+  odoo-test-data:
 
 networks:
   test-network:
