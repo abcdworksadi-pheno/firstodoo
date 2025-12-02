@@ -10,12 +10,18 @@ services:
       - odoo18-db-data:/var/lib/postgresql/data
     networks:
       - odoo-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U odoo18"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
 
   odoo:
     image: odoo:18.0
     container_name: odoo18
     depends_on:
-      - db
+      db:
+        condition: service_healthy
     ports:
       - "8069:8069"
     environment:
@@ -30,6 +36,10 @@ services:
     networks:
       - odoo-network
     restart: always
+    command: >
+      sh -c "until pg_isready -h db -p 5432 -U odoo18; do sleep 1; done;
+         odoo --db_host=db --db_port=5432 --db_user=odoo18 --db_password=odoo18 --database=odoo18
+         --addons-path=/mnt/extra-addons"
 
 volumes:
   odoo18-db-data:

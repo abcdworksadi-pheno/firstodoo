@@ -86,12 +86,15 @@ jobs:
 
       - name: Install new module
         run: |
-          cd $HOME/firstodoo
           docker exec odoo18 \
-            odoo -c /etc/odoo/odoo.conf \
-            -d odoo18 \
-            -u ALL \
-            --stop-after-init
+            odoo -d odoo18 \
+                -u ALL \
+                --db_host=db \
+                --db_port=5432 \
+                --db_user=odoo18 \
+                --db_password=odoo18 \
+                --stop-after-init
+
 
       - name: Check Odoo health
         run: |
