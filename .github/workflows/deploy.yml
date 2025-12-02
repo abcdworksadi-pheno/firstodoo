@@ -86,7 +86,8 @@ jobs:
 
       - name: Install new module
         run: |
-          docker exec odoo18-odoo \
+          cd $HOME/firstodoo
+          docker exec odoo18 \
             odoo -c /etc/odoo/odoo.conf \
             -d odoo18 \
             -u ALL \
