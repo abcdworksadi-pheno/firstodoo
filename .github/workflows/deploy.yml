@@ -1,0 +1,26 @@
+name: Deploy Odoo
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: self-hosted
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Deploy on server
+        run: |
+          echo "$SSH_PRIVATE_KEY" > private_key
+          chmod 600 private_key
+
+          ssh -o StrictHostKeyChecking=no -i private_key $SSH_USER@$SSH_HOST "
+            cd $APP_PATH &&
+            git pull &&
+            docker compose down &&
+            docker compose up -d --build
+          "
