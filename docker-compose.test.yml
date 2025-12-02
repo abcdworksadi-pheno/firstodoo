@@ -1,0 +1,58 @@
+# Docker Compose configuration for Odoo CI/CD testing
+# Used by GitHub Actions workflow to run module tests
+
+services:
+  db:
+    image: postgres:15
+    container_name: odoo18-test-db
+    environment:
+      POSTGRES_DB: odoo18
+      POSTGRES_USER: odoo18
+      POSTGRES_PASSWORD: odoo18
+    volumes:
+      - test-db-data:/var/lib/postgresql/data
+    networks:
+      - test-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U odoo18"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  odoo:
+    image: odoo:18.0
+    container_name: odoo18-test
+    depends_on:
+      db:
+        condition: service_healthy
+    ports:
+      - "8069:8069"
+    environment:
+      DB_HOST: db
+      DB_PORT: 5432
+      DB_USER: odoo18
+      DB_PASSWORD: odoo18
+      DB_NAME: odoo18
+    volumes:
+      - odoo18-test-data:/var/lib/odoo
+      - ./custom_addons:/mnt/extra-addons
+    networks:
+      - test-network
+    command: >
+      odoo
+      --db_host=db
+      --db_port=5432
+      --db_user=odoo18
+      --db_password=odoo18
+      --database=odoo18
+      --addons-path=/mnt/extra-addons
+      --init=task_planning,employee_mood,sale_stock_check
+      --stop-after-init
+
+volumes:
+  test-db-data:
+  odoo18-test-data:
+
+networks:
+  test-network:
+    driver: bridge
