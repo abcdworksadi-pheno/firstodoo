@@ -1,3 +1,84 @@
+# name: CI/CD Odoo
+
+# on:
+#   push:
+#     branches: ["main"]
+
+# jobs:
+#   test:
+#     name: Test Odoo Modules
+#     runs-on: ubuntu-latest
+
+#     steps:
+#       - name: Checkout code
+#         uses: actions/checkout@v3
+
+#       - name: Install Python deps
+#         run: |
+#           sudo apt update
+#           sudo apt install -y python3 python3-pip
+#           pip3 install pylint
+
+#       - name: Lint Odoo modules
+#         run: |
+#           pylint ./addons/* || true
+
+#       - name: Clean old test containers
+#         run: |
+#           docker compose -f docker-compose.test.yml down -v || true
+
+#       - name: Run Odoo tests
+#         run: |
+#           docker compose -f docker-compose.test.yml up --abort-on-container-exit --exit-code-from odoo
+#         continue-on-error: false
+
+#   deploy:
+#     name: Deploy to Server
+#     needs: test
+#     runs-on: self-hosted
+
+#     steps:
+#       - name: Checkout code
+#         uses: actions/checkout@v3
+
+#       - name: Sync files to server
+#         run: |
+#           rsync -avz --delete \
+#             ./ \
+#             $HOME/firstodoo/
+
+#       - name: Rebuild Odoo with retry
+#         run: |
+#           cd $HOME/firstodoo
+
+#           echo "Stopping old containers..."
+#           docker-compose down || true
+
+#           echo "Building new containers..."
+#           for i in {1..5}; do
+#             docker-compose up -d --build && break
+#             echo "Retrying build ($i/5)..."
+#             sleep 3
+#           done
+
+#       - name: Install new module
+#         run: |
+#           docker exec odoo18 \
+#             odoo -d odoo18 \
+#                 -u ALL \
+#                 --db_host=db \
+#                 --db_port=5432 \
+#                 --db_user=odoo18 \
+#                 --db_password=odoo18 \
+#                 --stop-after-init
+
+
+#       - name: Check Odoo health
+#         run: |
+#           curl -f http://localhost:8069 || exit 1
+
+
+
 name: CI/CD Odoo
 
 on:
@@ -5,6 +86,10 @@ on:
     branches: ["main"]
 
 jobs:
+
+################################################################################
+#                               1.   TESTS
+################################################################################
   test:
     name: Test Odoo Modules
     runs-on: ubuntu-latest
@@ -13,15 +98,19 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v3
 
-      - name: Install Python deps
+      - name: Install Python dependencies for linting
         run: |
           sudo apt update
           sudo apt install -y python3 python3-pip
-          pip3 install pylint
+          pip3 install pylint odoolint
 
-      - name: Lint Odoo modules
+      - name: Lint Python
         run: |
-          pylint ./addons/* || true
+          pylint addons/* || true
+
+      - name: Lint XML
+        run: |
+          odoolint addons/ || true
 
       - name: Clean old test containers
         run: |
@@ -29,9 +118,15 @@ jobs:
 
       - name: Run Odoo tests
         run: |
-          docker compose -f docker-compose.test.yml up --abort-on-container-exit --exit-code-from odoo
+          docker compose -f docker-compose.test.yml up \
+            --abort-on-container-exit \
+            --exit-code-from odoo
         continue-on-error: false
 
+
+################################################################################
+#                               2.   DEPLOY
+################################################################################
   deploy:
     name: Deploy to Server
     needs: test
@@ -41,38 +136,72 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v3
 
-      - name: Sync files to server
+      - name: Sync project to server
         run: |
           rsync -avz --delete \
             ./ \
             $HOME/firstodoo/
 
-      - name: Rebuild Odoo with retry
+      - name: Install Python dependencies (requirements.txt)
         run: |
           cd $HOME/firstodoo
+          if [ -f requirements.txt ]; then
+            sudo pip3 install -r requirements.txt
+          fi
 
-          echo "Stopping old containers..."
+      - name: Stop old containers
+        run: |
+          cd $HOME/firstodoo
           docker-compose down || true
 
-          echo "Building new containers..."
+      - name: Rebuild and start containers (with retry)
+        run: |
+          cd $HOME/firstodoo
           for i in {1..5}; do
             docker-compose up -d --build && break
             echo "Retrying build ($i/5)..."
             sleep 3
           done
 
-      - name: Install new module
+      - name: Detect changed Odoo modules
+        id: changed
+        run: |
+          mods=$(git diff --name-only HEAD~1 HEAD | grep "addons/" | cut -d/ -f2 | uniq | tr "\n" "," | sed 's/,$//')
+          if [ -z "$mods" ]; then
+            echo "no module changed"
+            echo "modules=NONE" >> $GITHUB_OUTPUT
+          else
+            echo "modules=$mods" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Update only changed modules
+        if: steps.changed.outputs.modules != 'NONE'
         run: |
           docker exec odoo18 \
             odoo -d odoo18 \
-                -u ALL \
+                -u ${{ steps.changed.outputs.modules }} \
                 --db_host=db \
                 --db_port=5432 \
                 --db_user=odoo18 \
                 --db_password=odoo18 \
                 --stop-after-init
 
-
-      - name: Check Odoo health
+      - name: Rollback on failure
+        if: failure()
         run: |
+          echo "DEPLOY FAILED — ROLLBACK IN PROGRESS"
+          cd $HOME/firstodoo
+          git reset --hard HEAD~1
+          docker-compose down || true
+          docker-compose up -d --build
+          exit 1
+
+      - name: Deep healthcheck
+        run: |
+          echo "Checking Odoo web interface..."
           curl -f http://localhost:8069 || exit 1
+
+          echo "Checking Odoo logs for errors..."
+          docker logs odoo18 | grep -i "ERROR" && exit 1 || echo "No critical errors found."
+
+          echo "Odoo deployment OK"
