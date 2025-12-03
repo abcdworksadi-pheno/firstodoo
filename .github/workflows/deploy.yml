@@ -1,26 +1,3 @@
-# name: Deploy Odoo
-
-# on:
-#   push:
-#     branches: ["main"]
-
-# jobs:
-#   deploy:
-#     runs-on: self-hosted
-
-#     steps:
-#       - name: Checkout code
-#         uses: actions/checkout@v3
-
-#       - name: Copier les fichiers sur le serveur
-#         run: |
-#           rsync -avz --delete ./ $HOME/firstodoo/
-
-#       - name: Redéployer Odoo
-#         run: |
-#           cd $HOME/firstodoo
-#           docker-compose down
-#           docker-compose up -d --build
 name: CI/CD Odoo
 
 on:
