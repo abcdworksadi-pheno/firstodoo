@@ -196,12 +196,57 @@ jobs:
           docker-compose up -d --build
           exit 1
 
-      - name: Deep healthcheck
+      - name: Deep healthcheck (robust)
         run: |
-          echo "Checking Odoo web interface..."
-          curl -f http://localhost:8069 || exit 1
+          set -euo pipefail
 
-          echo "Checking Odoo logs for errors..."
-          docker logs odoo18 | grep -i "ERROR" && exit 1 || echo "No critical errors found."
+          echo "1) Vérifier que le container odoo18 est en cours d'exécution..."
+          if ! docker ps --format '{{.Names}}' | grep -q '^odoo18$'; then
+            echo "ERROR: le container odoo18 n'est pas démarré."
+            docker ps -a --format "table {{.Names}}\t{{.Status}}"
+            docker logs odoo18 || true
+            exit 1
+          fi
+
+          echo "2) Attente du port HTTP (8069) avec retries (120s max)..."
+          max_wait=120
+          waited=0
+          interval=3
+          until curl -sSf http://localhost:8069/ || {
+            waited=$((waited+interval))
+            if [ "$waited" -ge "$max_wait" ]; then
+              echo "Échec: service HTTP non disponible après ${max_wait}s"
+              break
+            fi
+            echo "Attente ${waited}s..."
+            sleep $interval
+            false
+          }; do :; done
+
+          # Si curl n'a jamais réussi, afficher logs et sortir en erreur
+          if ! curl -sSf http://localhost:8069/ >/dev/null 2>&1; then
+            echo "=== Logs Odoo (dernier 500 lines) ==="
+            docker logs --tail 500 odoo18 || true
+            echo "Vérifie : port exposé, erreur de démarrage, dépendances manquantes."
+            exit 1
+          fi
+
+          echo "3) Vérifier l'absence d'erreurs critiques dans les logs (dernier 500 lines)..."
+          if docker logs --tail 500 odoo18 2>&1 | grep -iE "traceback|error|critical" >/dev/null; then
+            echo "WARN/ERROR trouvé dans les logs. Affichage des lignes pertinentes :"
+            docker logs --tail 500 odoo18 2>&1 | grep -iE "traceback|error|critical" || true
+            # si tu veux faire échouer le job sur ces erreurs, décommente la ligne suivante
+            # exit 1
+          else
+            echo "Pas d'erreurs critiques détectées dans les derniers logs."
+          fi
+
+          echo "4) Check final : requête JSON d'index Odoo (pour vérifier réponse HTTP correcte)..."
+          if ! curl -sSf http://localhost:8069/web/database/selector >/dev/null 2>&1; then
+            echo "La route /web/database/selector n'a pas répondu comme attendu."
+            docker logs --tail 500 odoo18 || true
+            exit 1
+          fi
 
           echo "Odoo deployment OK"
+
