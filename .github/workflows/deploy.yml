@@ -469,15 +469,22 @@ jobs:
                   server.starttls()
                   server.ehlo()
               
+              # Activer les logs SMTP pour diagnostiquer (visible dans les logs du job)
+              server.set_debuglevel(1)
+
               # Authentification
               server.login(smtp_user, smtp_password)
               
               # Envoi de l'email
-              server.sendmail(smtp_user, admin_emails, msg.as_string())
+              send_failures = server.sendmail(smtp_user, admin_emails, msg.as_string())
               server.close()
               
-              print(f"Email envoyé avec succès à: {', '.join(admin_emails)}")
               print(f"SMTP: {smtp_host}:{smtp_port} (SSL: {smtp_use_ssl})")
+              if send_failures:
+                  print(f"Échec sur certains destinataires: {send_failures}")
+                  exit(1)
+              else:
+                  print(f"Email envoyé avec succès à: {', '.join(admin_emails)}")
           except Exception as e:
               print(f"Erreur lors de l'envoi de l'email: {e}")
               import traceback
