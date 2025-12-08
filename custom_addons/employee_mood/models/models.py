@@ -8,7 +8,7 @@ class employee_mood(models.Model):
     _description = 'employee_mood.employee_mood'
     _rec_name = 'employee_id'
 
-    employee_id = fields.Many2one('hr.employee', string="Employé", required=True)
+    employee_id = fields.Many2one('hr.employee', string="Employée", required=True)
     date = fields.Date(default=fields.Date.today, string="Date", required=True)
     mood = fields.Selection([
         ('1', '😞 Très mauvais'),
