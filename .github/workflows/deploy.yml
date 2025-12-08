@@ -376,7 +376,8 @@ jobs:
             modules_count_text=" ($MODULES_COUNT module(s))"
           fi
 
-          email_body=$(cat <<EOF
+          # Corps HTML (fichier) pour améliorer la délivrabilité (OVH filtre parfois le pur HTML)
+          cat <<EOF > /tmp/email_body.html
           <!DOCTYPE html>
           <html>
           <head>
@@ -418,12 +419,22 @@ jobs:
           </body>
           </html>
           EOF
-          )
+
+          # Version texte (plain) pour les filtres anti-spam
+          cat <<EOF > /tmp/email_body.txt
+          [Odoo Deployment] ${status_text} - ${GITHUB_REPOSITORY}
+
+          Statut : ${status_text}
+          Repository : ${GITHUB_REPOSITORY}
+          Branche : ${GITHUB_REF_NAME}
+          Commit : ${short_sha}
+          Auteur : ${GITHUB_ACTOR}
+          Modules : ${modules_value}${modules_count_text}
+
+          Workflow : ${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}
+          EOF
 
           email_subject="[Odoo Deployment] ${status_emoji} ${status_text} - ${GITHUB_REPOSITORY}"
-
-          # Sauvegarder le body dans un fichier temporaire
-          echo "$email_body" > /tmp/email_body.html
 
           # Exporter les variables pour le script Python
           export EMAIL_SUBJECT="$email_subject"
@@ -447,14 +458,20 @@ jobs:
           
           with open('/tmp/email_body.html', 'r', encoding='utf-8') as f:
               body_html = f.read()
+          with open('/tmp/email_body.txt', 'r', encoding='utf-8') as f:
+              body_text = f.read()
 
           msg = MIMEMultipart('alternative')
           msg['Subject'] = subject
           msg['From'] = f"GitHub Actions <{smtp_user}>"
           msg['To'] = ', '.join(admin_emails)
+          msg['Reply-To'] = smtp_user  # certains serveurs requièrent un Reply-To aligné
 
-          part = MIMEText(body_html, 'html', 'utf-8')
-          msg.attach(part)
+          # Ajouter une version texte + HTML pour limiter le classement en spam
+          part_text = MIMEText(body_text, 'plain', 'utf-8')
+          part_html = MIMEText(body_html, 'html', 'utf-8')
+          msg.attach(part_text)
+          msg.attach(part_html)
 
           try:
               # Connexion SMTP selon le type (SSL ou TLS)
