@@ -14,7 +14,7 @@ class employee_mood(models.Model):
         ('1', '😞 Très mauvais'),
         ('2', '🙁 Mauvais'),
         ('3', '😐 Neutre'),
-        ('4', '🙂 Bon'),
+        ('4', '🙂 Bonne'),
         ('5', '😄 Excellente'),
         ('6', '🤩 Superbe'),
     ], string="Humeur", required=True)
