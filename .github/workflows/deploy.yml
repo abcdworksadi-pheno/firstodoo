@@ -133,8 +133,11 @@ jobs:
     runs-on: self-hosted
     env:
       SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
-      GMAIL_USER: ${{ secrets.GMAIL_USER }}
-      GMAIL_PASSWORD: ${{ secrets.GMAIL_PASSWORD }}
+      SMTP_HOST: ${{ secrets.SMTP_HOST }}
+      SMTP_PORT: ${{ secrets.SMTP_PORT }}
+      SMTP_USER: ${{ secrets.SMTP_USER }}
+      SMTP_PASSWORD: ${{ secrets.SMTP_PASSWORD }}
+      SMTP_USE_SSL: ${{ secrets.SMTP_USE_SSL }}
       ADMIN_EMAILS: ${{ secrets.ADMIN_EMAILS }}
 
     steps:
@@ -333,17 +336,21 @@ jobs:
             --data "$payload" \
             "$SLACK_WEBHOOK_URL"
 
-      - name: Notify admins (Gmail)
+      - name: Notify admins (Email SMTP)
         if: always()
         env:
           STATUS: ${{ job.status }}
           MODULES: ${{ steps.changed.outputs.modules }}
           MODULES_COUNT: ${{ steps.changed.outputs.modules_count }}
         run: |
-          if [ -z "${GMAIL_USER:-}" ] || [ -z "${GMAIL_PASSWORD:-}" ] || [ -z "${ADMIN_EMAILS:-}" ]; then
-            echo "GMAIL_USER, GMAIL_PASSWORD ou ADMIN_EMAILS non configurés, notification email sautée."
+          if [ -z "${SMTP_HOST:-}" ] || [ -z "${SMTP_USER:-}" ] || [ -z "${SMTP_PASSWORD:-}" ] || [ -z "${ADMIN_EMAILS:-}" ]; then
+            echo "SMTP_HOST, SMTP_USER, SMTP_PASSWORD ou ADMIN_EMAILS non configurés, notification email sautée."
             exit 0
           fi
+
+          # Valeurs par défaut pour SMTP_PORT et SMTP_USE_SSL
+          SMTP_PORT="${SMTP_PORT:-587}"
+          SMTP_USE_SSL="${SMTP_USE_SSL:-false}"
 
           short_sha=$(echo "${GITHUB_SHA}" | cut -c1-8)
           
@@ -416,8 +423,10 @@ jobs:
           # Sauvegarder le body dans un fichier temporaire
           echo "$email_body" > /tmp/email_body.html
 
-          # Exporter le sujet pour le script Python
+          # Exporter les variables pour le script Python
           export EMAIL_SUBJECT="$email_subject"
+          export SMTP_PORT
+          export SMTP_USE_SSL
 
           # Envoyer l'email via Python avec smtplib
           python3 <<PYTHON_SCRIPT
@@ -426,8 +435,11 @@ jobs:
           from email.mime.multipart import MIMEMultipart
           import os
 
-          gmail_user = os.environ['GMAIL_USER']
-          gmail_password = os.environ['GMAIL_PASSWORD']
+          smtp_host = os.environ['SMTP_HOST']
+          smtp_port = int(os.environ.get('SMTP_PORT', '587'))
+          smtp_user = os.environ['SMTP_USER']
+          smtp_password = os.environ['SMTP_PASSWORD']
+          smtp_use_ssl = os.environ.get('SMTP_USE_SSL', 'false').lower() == 'true'
           admin_emails = [email.strip() for email in os.environ['ADMIN_EMAILS'].split(',')]
           subject = os.environ['EMAIL_SUBJECT']
           
@@ -436,20 +448,37 @@ jobs:
 
           msg = MIMEMultipart('alternative')
           msg['Subject'] = subject
-          msg['From'] = f"GitHub Actions <{gmail_user}>"
+          msg['From'] = f"GitHub Actions <{smtp_user}>"
           msg['To'] = ', '.join(admin_emails)
 
           part = MIMEText(body_html, 'html', 'utf-8')
           msg.attach(part)
 
           try:
-              server = smtplib.SMTP_SSL('smtp.gmail.com', 465)
-              server.ehlo()
-              server.login(gmail_user, gmail_password)
-              server.sendmail(gmail_user, admin_emails, msg.as_string())
+              # Connexion SMTP selon le type (SSL ou TLS)
+              if smtp_use_ssl:
+                  # Connexion SSL directe (port 465 généralement)
+                  server = smtplib.SMTP_SSL(smtp_host, smtp_port)
+                  server.ehlo()
+              else:
+                  # Connexion STARTTLS (port 587 généralement)
+                  server = smtplib.SMTP(smtp_host, smtp_port)
+                  server.ehlo()
+                  server.starttls()
+                  server.ehlo()
+              
+              # Authentification
+              server.login(smtp_user, smtp_password)
+              
+              # Envoi de l'email
+              server.sendmail(smtp_user, admin_emails, msg.as_string())
               server.close()
+              
               print(f"Email envoyé avec succès à: {', '.join(admin_emails)}")
+              print(f"SMTP: {smtp_host}:{smtp_port} (SSL: {smtp_use_ssl})")
           except Exception as e:
               print(f"Erreur lors de l'envoi de l'email: {e}")
+              import traceback
+              traceback.print_exc()
               exit(1)
           PYTHON_SCRIPT
