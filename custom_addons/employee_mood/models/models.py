@@ -16,7 +16,7 @@ class employee_mood(models.Model):
         ('3', '😐 Neutre'),
         ('4', '🙂 Bon'),
         ('5', '😄 Excellente'),
-        ('6', '🤩 Super'),
+        ('6', '🤩 Superbe'),
     ], string="Humeur", required=True)
     note = fields.Text("Commentaires")
     # Temporary compatibility field: stale views reference `value`.
