@@ -12,7 +12,7 @@ class employee_mood(models.Model):
     date = fields.Date(default=fields.Date.today, string="Date", required=True)
     mood = fields.Selection([
         ('1', '😞 Très mauvais'),
-        ('2', '🙁 Mauvais'),
+        ('2', '🙁 Mauvaise'),
         ('3', '😐 Neutre'),
         ('4', '🙂 Bonne'),
         ('5', '😄 Excellent'),
