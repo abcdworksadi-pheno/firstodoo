@@ -15,7 +15,7 @@ class employee_mood(models.Model):
         ('2', '🙁 Mauvais'),
         ('3', '😐 Neutre'),
         ('4', '🙂 Bonne'),
-        ('5', '😄 Excellente'),
+        ('5', '😄 Excellent'),
         ('6', '🤩 Superbe'),
     ], string="Humeur", required=True)
     note = fields.Text("Commentaires")
