@@ -187,11 +187,13 @@ jobs:
 
           echo "Diff from $BASE_SHA to $HEAD_SHA"
 
-          mods=$(git diff --name-only "$BASE_SHA" "$HEAD_SHA" -- 'addons/*' \
-            | cut -d/ -f2 \
+          mods=$(git diff --name-only "$BASE_SHA" "$HEAD_SHA" -- 'addons/*' 'custom_addons/*' \
+            | awk -F/ '
+                $1=="addons"{print $2}
+                $1=="custom_addons"{print $2}
+              ' \
             | sort -u \
-            | tr "\n" "," \
-            | sed 's/,$//')
+            | paste -sd, -)
 
           if [ -z "$mods" ]; then
             echo "no module changed"
