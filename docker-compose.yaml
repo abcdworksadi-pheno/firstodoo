@@ -3,7 +3,6 @@ services:
     image: postgres:15
     container_name: odoo18-db
     environment:
-      POSTGRES_DB: odoo18
       POSTGRES_USER: odoo18
       POSTGRES_PASSWORD: odoo18
     volumes:
@@ -25,21 +24,16 @@ services:
     ports:
       - "8069:8069"
     environment:
-      DB_HOST: db
-      DB_PORT: 5432
-      DB_USER: odoo18
-      DB_PASSWORD: odoo18
-      DB_NAME: odoo18
+      HOST: db
+      PORT: 5432
+      USER: odoo18
+      PASSWORD: odoo18
     volumes:
       - odoo18-data:/var/lib/odoo
       - ./custom_addons:/mnt/extra-addons
     networks:
       - odoo-network
     restart: always
-    command: >
-      sh -c "until pg_isready -h db -p 5432 -U odoo18; do sleep 1; done;
-         odoo --db_host=db --db_port=5432 --db_user=odoo18 --db_password=odoo18 --database=odoo18
-         --addons-path=/mnt/extra-addons"
 
 volumes:
   odoo18-db-data:

@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+  <data>
+    <!-- Ajout du champ dans le tableau des lignes de commande -->
+    <record id="view_sale_order_form_inherit_section_custom" model="ir.ui.view">
+        <field name="name">sale.order.form.section.custom</field>
+        <field name="model">sale.order</field>
+        <field name="inherit_id" ref="sale.view_order_form"/>
+        <field name="arch" type="xml">
+            <!-- Ajouter la colonne après le produit (avant la quantité) -->
+            <xpath expr="//field[@name='order_line']/list/field[@name='product_uom_qty']" position="before">
+                <field name="x_section_code" 
+                       string="Code Section" 
+                       optional="show"
+                       invisible="display_type == 'line_section'"/>
+            </xpath>
+        </field>
+    </record>
+  </data>
+</odoo>
+
+
