@@ -1,0 +1,162 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <!-- Vue liste des modèles -->
+        <record id="view_lettre_template_tree" model="ir.ui.view">
+            <field name="name">lettre.motivation.template.tree</field>
+            <field name="model">lettre.motivation.template</field>
+            <field name="arch" type="xml">
+                <list string="Modèles de Lettres">
+                    <field name="name"/>
+                    <field name="niveau"/>
+                    <field name="format_sortie"/>
+                    <field name="active"/>
+                </list>
+            </field>
+        </record>
+
+        <!-- Vue formulaire des modèles -->
+        <record id="view_lettre_template_form" model="ir.ui.view">
+            <field name="name">lettre.motivation.template.form</field>
+            <field name="model">lettre.motivation.template</field>
+            <field name="arch" type="xml">
+                <form string="Modèle de Lettre de Motivation">
+                    <header>
+                    </header>
+                    <sheet>
+                        <group>
+                            <group>
+                                <field name="name"/>
+                                <field name="niveau"/>
+                                <field name="format_sortie"/>
+                                <field name="active"/>
+                            </group>
+                            <group>
+                                <field name="description" placeholder="Description du modèle..."/>
+                            </group>
+                        </group>
+                        <group>
+                            <field name="use_word_template"/>
+                            <field name="word_template" 
+                                   filename="word_template_filename"
+                                   invisible="not use_word_template"
+                                   required="use_word_template"/>
+                            <field name="word_template_filename" invisible="1"/>
+                        </group>
+                        <notebook>
+                            <page string="Contenu" name="contenu">
+                                <group>
+                                    <field name="contenu" 
+                                           widget="html" 
+                                           options="{'height': 400}"
+                                           invisible="use_word_template"
+                                           required="not use_word_template"/>
+                                    <div class="alert alert-info" role="alert" invisible="not use_word_template">
+                                        <p>Vous utilisez un fichier Word comme template. Le contenu HTML sera extrait automatiquement lors de l'upload du fichier.</p>
+                                        <p>Utilisez <code>{{variable}}</code> dans votre fichier Word pour insérer des variables dynamiques.</p>
+                                    </div>
+                                </group>
+                            </page>
+                            <page string="Variables" name="variables">
+                                <field name="variables_ids" nolabel="1" context="{'default_template_id': id}">
+                                    <list string="Variables">
+                                        <field name="name"/>
+                                        <field name="label"/>
+                                        <field name="type"/>
+                                        <field name="valeur_par_defaut"/>
+                                        <field name="required"/>
+                                    </list>
+                                </field>
+                            </page>
+                            <page string="Tableaux" name="tableaux">
+                                <field name="tableaux_ids" nolabel="1" context="{'default_template_id': id}">
+                                    <list string="Tableaux">
+                                        <field name="name"/>
+                                        <field name="variable_name"/>
+                                        <field name="sequence" widget="handle"/>
+                                    </list>
+                                    <form string="Tableau">
+                                        <sheet>
+                                            <group>
+                                                <field name="name"/>
+                                                <field name="variable_name"/>
+                                                <field name="sequence"/>
+                                                <field name="source_excel_id" domain="[('tableau_id', '=', False)]"/>
+                                            </group>
+                                            <notebook>
+                                                <page string="Colonnes" name="colonnes">
+                                                    <field name="colonnes_ids" nolabel="1">
+                                                        <list string="Colonnes">
+                                                            <field name="name"/>
+                                                            <field name="label"/>
+                                                            <field name="type_colonne"/>
+                                                            <field name="width"/>
+                                                            <field name="sequence" widget="handle"/>
+                                                        </list>
+                                                    </field>
+                                                </page>
+                                                <page string="Lignes" name="lignes">
+                                                    <field name="lignes_ids" nolabel="1">
+                                                        <list string="Lignes">
+                                                            <field name="sequence" widget="handle"/>
+                                                            <field name="valeurs"/>
+                                                        </list>
+                                                    </field>
+                                                </page>
+                                            </notebook>
+                                        </sheet>
+                                    </form>
+                                </field>
+                            </page>
+                            <page string="Lettres Générées" name="instances">
+                                <field name="instances_ids" nolabel="1">
+                                    <list string="Lettres Générées">
+                                        <field name="name"/>
+                                        <field name="date_generation"/>
+                                        <field name="state"/>
+                                    </list>
+                                </field>
+                            </page>
+                        </notebook>
+                    </sheet>
+                    <chatter/>
+                </form>
+            </field>
+        </record>
+
+        <!-- Vue recherche des modèles -->
+        <record id="view_lettre_template_search" model="ir.ui.view">
+            <field name="name">lettre.motivation.template.search</field>
+            <field name="model">lettre.motivation.template</field>
+            <field name="arch" type="xml">
+                <search string="Rechercher un Modèle">
+                    <field name="name"/>
+                    <field name="niveau"/>
+                    <filter string="Niveau 1" name="niveau1" domain="[('niveau', '=', 'niveau1')]"/>
+                    <filter string="Niveau 2" name="niveau2" domain="[('niveau', '=', 'niveau2')]"/>
+                    <filter string="Niveau 3" name="niveau3" domain="[('niveau', '=', 'niveau3')]"/>
+                    <filter string="Actifs" name="active" domain="[('active', '=', True)]"/>
+                    <separator/>
+                    <filter string="Archivés" name="inactive" domain="[('active', '=', False)]"/>
+                </search>
+            </field>
+        </record>
+
+        <!-- Action pour les modèles -->
+        <record id="action_lettre_template" model="ir.actions.act_window">
+            <field name="name">Modèles de Lettres de Motivation</field>
+            <field name="res_model">lettre.motivation.template</field>
+            <field name="view_mode">list,form</field>
+            <field name="search_view_id" ref="view_lettre_template_search"/>
+            <field name="help" type="html">
+                <p class="o_view_nocontent_smiling_face">
+                    Créez votre premier modèle de lettre de motivation
+                </p>
+                <p>
+                    Les modèles permettent de définir la structure de vos lettres avec des variables dynamiques.
+                </p>
+            </field>
+        </record>
+    </data>
+</odoo>
+

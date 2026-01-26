@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- 
+    Note: La configuration de la licence se fait directement via :
+    Paramètres > Technique > Paramètres > Paramètres système
+    
+    Rechercher les clés suivantes :
+    - abcd.license.blob (blob de licence)
+    - abcd.license.public_key_hex (clé publique hex)
+    - abcd.license.grace_period_days (période de grâce)
+    - abcd.license.server_url (URL serveur pour vérification online)
+    -->
+</odoo>

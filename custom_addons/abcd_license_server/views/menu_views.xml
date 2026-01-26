@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <menuitem id="menu_license_root"
+              name="Licences ABCD"
+              sequence="100"
+              web_icon="abcd_license_server,static/description/icon.png"/>
+
+    <menuitem id="menu_license_clients"
+              name="Clients"
+              parent="menu_license_root"
+              action="action_license_client"
+              sequence="10"/>
+
+    <menuitem id="menu_license_keys"
+              name="Paires de Clés"
+              parent="menu_license_root"
+              action="action_license_key"
+              sequence="20"/>
+
+    <menuitem id="menu_license_licenses"
+              name="Licences"
+              parent="menu_license_root"
+              action="license_license_action"
+              sequence="30"/>
+
+    <menuitem id="menu_license_generate"
+              name="Générer une Licence"
+              parent="menu_license_root"
+              action="action_generate_license_wizard"
+              sequence="40"/>
+</odoo>

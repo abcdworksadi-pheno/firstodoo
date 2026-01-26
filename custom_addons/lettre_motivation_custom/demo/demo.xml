@@ -1,0 +1,172 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+        <!-- Exemple de modèle niveau 1 -->
+        <record id="demo_template_niveau1" model="lettre.motivation.template">
+            <field name="name">Modèle Simple - Candidature Standard</field>
+            <field name="niveau">niveau1</field>
+            <field name="description">Modèle simple avec variables texte</field>
+            <field name="format_sortie">pdf</field>
+            <field name="contenu"><![CDATA[
+<div style="font-family: Arial, sans-serif; max-width: 800px; margin: 0 auto; padding: 20px;">
+    <p style="text-align: right;">{{ville}}, le {{date}}</p>
+    
+    <p>Objet : Candidature pour le poste de {{poste}}</p>
+    
+    <p>Madame, Monsieur,</p>
+    
+    <p>Je vous écris pour vous faire part de mon intérêt pour le poste de {{poste}} au sein de votre entreprise.</p>
+    
+    <p>Actuellement {{situation_actuelle}}, je souhaite mettre mes compétences au service de votre organisation.</p>
+    
+    <p>{{motivation}}</p>
+    
+    <p>Je reste à votre disposition pour un entretien et me tiens à votre entière disposition pour tout complément d'information.</p>
+    
+    <p>Dans l'attente de votre retour, je vous prie d'agréer, Madame, Monsieur, l'expression de mes salutations distinguées.</p>
+    
+    <p style="margin-top: 40px;">{{signature}}</p>
+</div>
+            ]]></field>
+        </record>
+
+        <!-- Variables pour le modèle niveau 1 -->
+        <record id="demo_variable_ville" model="lettre.motivation.variable">
+            <field name="name">ville</field>
+            <field name="label">Ville</field>
+            <field name="type">texte</field>
+            <field name="template_id" ref="demo_template_niveau1"/>
+            <field name="valeur_par_defaut">Paris</field>
+            <field name="required">True</field>
+        </record>
+
+        <record id="demo_variable_date" model="lettre.motivation.variable">
+            <field name="name">date</field>
+            <field name="label">Date</field>
+            <field name="type">date</field>
+            <field name="template_id" ref="demo_template_niveau1"/>
+            <field name="required">True</field>
+        </record>
+
+        <record id="demo_variable_poste" model="lettre.motivation.variable">
+            <field name="name">poste</field>
+            <field name="label">Poste</field>
+            <field name="type">texte</field>
+            <field name="template_id" ref="demo_template_niveau1"/>
+            <field name="required">True</field>
+        </record>
+
+        <record id="demo_variable_situation" model="lettre.motivation.variable">
+            <field name="name">situation_actuelle</field>
+            <field name="label">Situation Actuelle</field>
+            <field name="type">texte</field>
+            <field name="template_id" ref="demo_template_niveau1"/>
+            <field name="valeur_par_defaut">en recherche d'emploi</field>
+        </record>
+
+        <record id="demo_variable_motivation" model="lettre.motivation.variable">
+            <field name="name">motivation</field>
+            <field name="label">Motivation</field>
+            <field name="type">texte</field>
+            <field name="template_id" ref="demo_template_niveau1"/>
+        </record>
+
+        <record id="demo_variable_signature" model="lettre.motivation.variable">
+            <field name="name">signature</field>
+            <field name="label">Signature</field>
+            <field name="type">texte</field>
+            <field name="template_id" ref="demo_template_niveau1"/>
+            <field name="required">True</field>
+        </record>
+
+        <!-- Exemple de modèle niveau 2 avec tableau -->
+        <record id="demo_template_niveau2" model="lettre.motivation.template">
+            <field name="name">Modèle avec Tableau - Compétences</field>
+            <field name="niveau">niveau2</field>
+            <field name="description">Modèle avec tableau de compétences</field>
+            <field name="format_sortie">pdf</field>
+            <field name="contenu"><![CDATA[
+<div style="font-family: Arial, sans-serif; max-width: 800px; margin: 0 auto; padding: 20px;">
+    <p>Bonjour {{nom_candidat}},</p>
+    
+    <p>Voici mes compétences principales :</p>
+    
+    <div style="margin: 20px 0;">
+        {{tableau_competences}}
+    </div>
+    
+    <p>Cordialement,<br/>{{signature}}</p>
+</div>
+            ]]></field>
+        </record>
+
+        <!-- Variables pour le modèle niveau 2 -->
+        <record id="demo_variable_nom_niveau2" model="lettre.motivation.variable">
+            <field name="name">nom_candidat</field>
+            <field name="label">Nom du Candidat</field>
+            <field name="type">texte</field>
+            <field name="template_id" ref="demo_template_niveau2"/>
+            <field name="required">True</field>
+        </record>
+
+        <record id="demo_variable_signature_niveau2" model="lettre.motivation.variable">
+            <field name="name">signature</field>
+            <field name="label">Signature</field>
+            <field name="type">texte</field>
+            <field name="template_id" ref="demo_template_niveau2"/>
+            <field name="required">True</field>
+        </record>
+
+        <!-- Tableau de compétences -->
+        <record id="demo_tableau_competences" model="lettre.motivation.tableau">
+            <field name="name">Compétences</field>
+            <field name="template_id" ref="demo_template_niveau2"/>
+            <field name="variable_name">tableau_competences</field>
+            <field name="sequence">10</field>
+        </record>
+
+        <!-- Colonnes du tableau -->
+        <record id="demo_colonne_competence" model="lettre.motivation.tableau.colonne">
+            <field name="name">competence</field>
+            <field name="label">Compétence</field>
+            <field name="type_colonne">texte</field>
+            <field name="tableau_id" ref="demo_tableau_competences"/>
+            <field name="sequence">10</field>
+        </record>
+
+        <record id="demo_colonne_niveau" model="lettre.motivation.tableau.colonne">
+            <field name="name">niveau</field>
+            <field name="label">Niveau</field>
+            <field name="type_colonne">texte</field>
+            <field name="tableau_id" ref="demo_tableau_competences"/>
+            <field name="sequence">20</field>
+        </record>
+
+        <record id="demo_colonne_annees" model="lettre.motivation.tableau.colonne">
+            <field name="name">annees</field>
+            <field name="label">Années d'expérience</field>
+            <field name="type_colonne">nombre</field>
+            <field name="tableau_id" ref="demo_tableau_competences"/>
+            <field name="sequence">30</field>
+        </record>
+
+        <!-- Lignes d'exemple -->
+        <record id="demo_ligne_python" model="lettre.motivation.tableau.ligne">
+            <field name="tableau_id" ref="demo_tableau_competences"/>
+            <field name="sequence">10</field>
+            <field name="valeurs">{"competence": "Python", "niveau": "Avancé", "annees": "5"}</field>
+        </record>
+
+        <record id="demo_ligne_odoo" model="lettre.motivation.tableau.ligne">
+            <field name="tableau_id" ref="demo_tableau_competences"/>
+            <field name="sequence">20</field>
+            <field name="valeurs">{"competence": "Odoo", "niveau": "Intermédiaire", "annees": "3"}</field>
+        </record>
+
+        <record id="demo_ligne_sql" model="lettre.motivation.tableau.ligne">
+            <field name="tableau_id" ref="demo_tableau_competences"/>
+            <field name="sequence">30</field>
+            <field name="valeurs">{"competence": "SQL", "niveau": "Avancé", "annees": "7"}</field>
+        </record>
+    </data>
+</odoo>

@@ -7,8 +7,8 @@
         <field name="model">sale.order</field>
         <field name="inherit_id" ref="sale.view_order_form"/>
         <field name="arch" type="xml">
-            <!-- Ajouter la colonne après le produit (avant la quantité) -->
-            <xpath expr="//field[@name='order_line']/list/field[@name='product_uom_qty']" position="before">
+            <!-- Ajouter la colonne après le produit -->
+            <xpath expr="//field[@name='order_line']/list/field[@name='product_id']" position="after">
                 <field name="x_section_code" 
                        string="Code Section" 
                        optional="show"

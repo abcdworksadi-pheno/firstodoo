@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <!-- Vue liste des variables -->
+        <record id="view_lettre_variable_tree" model="ir.ui.view">
+            <field name="name">lettre.motivation.variable.tree</field>
+            <field name="model">lettre.motivation.variable</field>
+            <field name="arch" type="xml">
+                <list string="Variables">
+                    <field name="name"/>
+                    <field name="label"/>
+                    <field name="type"/>
+                    <field name="valeur_par_defaut"/>
+                    <field name="required"/>
+                </list>
+            </field>
+        </record>
+
+        <!-- Vue formulaire des variables -->
+        <record id="view_lettre_variable_form" model="ir.ui.view">
+            <field name="name">lettre.motivation.variable.form</field>
+            <field name="model">lettre.motivation.variable</field>
+            <field name="arch" type="xml">
+                <form string="Variable">
+                    <sheet>
+                        <group>
+                            <group>
+                                <field name="name"/>
+                                <field name="label"/>
+                                <field name="type"/>
+                                <field name="required"/>
+                            </group>
+                            <group>
+                                <field name="template_id"/>
+                                <field name="valeur_par_defaut"/>
+                                <field name="help_text"/>
+                            </group>
+                        </group>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+    </data>
+</odoo>
+

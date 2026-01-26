@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <!-- Vue formulaire du wizard de génération -->
+        <record id="view_lettre_generation_wizard_form" model="ir.ui.view">
+            <field name="name">lettre.motivation.generation.wizard.form</field>
+            <field name="model">lettre.motivation.generation.wizard</field>
+            <field name="arch" type="xml">
+                <form string="Générer une Lettre de Motivation">
+                    <group>
+                        <field name="template_id" options="{'no_create': True}"/>
+                        <field name="name"/>
+                    </group>
+                    <notebook>
+                        <page string="Variables" name="variables">
+                            <field name="variable_ids" nolabel="1" create="0">
+                                <list string="Variables" editable="bottom">
+                                    <field name="name" readonly="1"/>
+                                    <field name="label" readonly="1"/>
+                                    <field name="type" readonly="1"/>
+                                    <field name="valeur" required="required"/>
+                                    <field name="valeur_par_defaut" readonly="1"/>
+                                    <field name="required" readonly="1" invisible="1"/>
+                                </list>
+                            </field>
+                        </page>
+                    </notebook>
+                    <footer>
+                        <button string="Générer" name="action_generer" type="object" class="btn-primary"/>
+                        <button string="Annuler" class="btn-secondary" special="cancel"/>
+                    </footer>
+                </form>
+            </field>
+        </record>
+
+        <!-- Vue formulaire du wizard de sélection depuis commande -->
+        <record id="view_lettre_selection_wizard_form" model="ir.ui.view">
+            <field name="name">lettre.motivation.selection.wizard.form</field>
+            <field name="model">lettre.motivation.selection.wizard</field>
+            <field name="arch" type="xml">
+                <form string="Sélectionner un Modèle de Lettre">
+                    <group>
+                        <field name="sale_order_id" invisible="1"/>
+                        <field name="template_id" options="{'no_create': True}" required="1"/>
+                        <field name="format_sortie" required="1"/>
+                    </group>
+                    <div class="alert alert-info" role="alert">
+                        <p>Sélectionnez le modèle de lettre à utiliser pour générer la lettre de motivation.</p>
+                        <p>Choisissez le format de sortie souhaité (PDF, HTML ou DOCX).</p>
+                        <p>Les données de la commande seront automatiquement mappées vers les variables du modèle.</p>
+                    </div>
+                    <footer>
+                        <button string="Générer" name="action_generer" type="object" class="btn-primary"/>
+                        <button string="Annuler" class="btn-secondary" special="cancel"/>
+                    </footer>
+                </form>
+            </field>
+        </record>
+    </data>
+</odoo>
+

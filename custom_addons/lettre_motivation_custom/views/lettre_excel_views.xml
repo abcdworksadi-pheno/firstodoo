@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <!-- Vue liste des sources Excel -->
+        <record id="view_lettre_excel_tree" model="ir.ui.view">
+            <field name="name">lettre.motivation.excel.source.tree</field>
+            <field name="model">lettre.motivation.excel.source</field>
+            <field name="arch" type="xml">
+                <list string="Sources Excel">
+                    <field name="name"/>
+                    <field name="nom_fichier"/>
+                    <field name="feuille"/>
+                    <field name="tableau_id"/>
+                    <field name="active"/>
+                </list>
+            </field>
+        </record>
+
+        <!-- Vue formulaire des sources Excel -->
+        <record id="view_lettre_excel_form" model="ir.ui.view">
+            <field name="name">lettre.motivation.excel.source.form</field>
+            <field name="model">lettre.motivation.excel.source</field>
+            <field name="arch" type="xml">
+                <form string="Source Excel">
+                    <header>
+                        <button name="action_importer_excel" string="Importer Excel" type="object" class="btn-primary"/>
+                    </header>
+                    <sheet>
+                        <group>
+                            <group>
+                                <field name="name"/>
+                                <field name="tableau_id" domain="[('source_excel_id', '=', False)]"/>
+                                <field name="active"/>
+                            </group>
+                            <group>
+                                <field name="fichier_excel" filename="nom_fichier"/>
+                                <field name="nom_fichier" readonly="1"/>
+                                <field name="feuille"/>
+                                <field name="range_cellules"/>
+                            </group>
+                        </group>
+                        <notebook>
+                            <page string="Mapping des Colonnes" name="mapping">
+                                <group>
+                                    <field name="mapping_colonnes_dict" widget="text" nolabel="1" 
+                                           placeholder='{"A": "competence", "B": "niveau", "C": "annees"}'
+                                           help="Mapping JSON: colonne Excel (A, B, C...) vers nom de colonne du tableau"/>
+                                </group>
+                            </page>
+                        </notebook>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+
+        <!-- Action pour les sources Excel -->
+        <record id="action_lettre_excel" model="ir.actions.act_window">
+            <field name="name">Sources Excel</field>
+            <field name="res_model">lettre.motivation.excel.source</field>
+            <field name="view_mode">list,form</field>
+        </record>
+    </data>
+</odoo>
+

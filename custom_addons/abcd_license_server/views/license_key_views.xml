@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_license_key_tree" model="ir.ui.view">
+        <field name="name">license.key.tree</field>
+        <field name="model">license.key</field>
+        <field name="arch" type="xml">
+            <list string="Clés">
+                <field name="name"/>
+                <field name="active"/>
+                <field name="key_generated"/>
+                <field name="license_count"/>
+                <field name="create_date"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_license_key_form" model="ir.ui.view">
+        <field name="name">license.key.form</field>
+        <field name="model">license.key</field>
+        <field name="arch" type="xml">
+            <form string="Paire de Clés">
+                <header>
+                    <button name="action_generate_keys" 
+                            type="object" 
+                            string="Générer les Clés"
+                            class="oe_highlight"
+                            invisible="key_generated"/>
+                    <button name="action_deactivate_others" 
+                            type="object" 
+                            string="Activer cette Clé"
+                            invisible="active and not key_generated"/>
+                    <field name="active" widget="boolean_toggle"/>
+                </header>
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="name"/>
+                            <field name="key_generated" readonly="1"/>
+                            <field name="license_count" readonly="1"/>
+                        </group>
+                    </group>
+                    <notebook invisible="not key_generated">
+                        <page string="Clé Publique (PEM)" name="public_pem">
+                            <field name="public_key_pem" widget="text" readonly="1" nolabel="1"/>
+                            <button name="action_download_public_key" 
+                                    type="object" 
+                                    string="Télécharger Clé Publique"
+                                    class="btn-primary"/>
+                        </page>
+                        <page string="Clé Publique (Hex)" name="public_hex">
+                            <div class="alert alert-warning" role="alert">
+                                <strong>Clé Publique Hex (pour Odoo)</strong>
+                                <p>Copiez cette clé dans le paramètre <code>abcd.license.public_key_hex</code> de l'instance Odoo cliente.</p>
+                            </div>
+                            <field name="public_key_hex" widget="text" readonly="1" nolabel="1"/>
+                        </page>
+                        <page string="Clé Privée" name="private" invisible="not key_generated">
+                            <div class="alert alert-danger" role="alert">
+                                <strong>⚠️ ATTENTION : Clé Privée</strong>
+                                <p>Cette clé ne doit <strong>JAMAIS</strong> être partagée ou stockée côté client.</p>
+                                <p>Elle doit rester uniquement sur ce serveur de licence.</p>
+                            </div>
+                            <field name="private_key_pem" widget="text" readonly="1" nolabel="1" password="True"/>
+                            <button name="action_download_private_key" 
+                                    type="object" 
+                                    string="Télécharger Clé Privée"
+                                    class="btn-danger"
+                                    invisible="not key_generated"/>
+                        </page>
+                    </notebook>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="view_license_key_search" model="ir.ui.view">
+        <field name="name">license.key.search</field>
+        <field name="model">license.key</field>
+        <field name="arch" type="xml">
+            <search string="Clés">
+                <field name="name"/>
+                <filter string="Actives" name="active" domain="[('active', '=', True)]"/>
+                <filter string="Générées" name="generated" domain="[('key_generated', '=', True)]"/>
+            </search>
+        </field>
+    </record>
+
+    <record id="action_license_key" model="ir.actions.act_window">
+        <field name="name">Paires de Clés</field>
+        <field name="res_model">license.key</field>
+        <field name="view_mode">list,form</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Créez votre première paire de clés
+            </p>
+            <p>
+                Les clés Ed25519 sont utilisées pour signer les licences.
+                Générez une paire de clés et activez-la pour commencer à générer des licences.
+            </p>
+        </field>
+    </record>
+</odoo>

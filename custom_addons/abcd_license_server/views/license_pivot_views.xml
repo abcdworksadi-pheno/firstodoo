@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Vue Pivot pour les Licences -->
+    <record id="view_license_pivot" model="ir.ui.view">
+        <field name="name">license.license.pivot</field>
+        <field name="model">license.license</field>
+        <field name="arch" type="xml">
+            <pivot string="Analyse Croisée des Licences">
+                <field name="client_id" type="row"/>
+                <field name="edition" type="col"/>
+                <field name="max_users" type="measure"/>
+            </pivot>
+        </field>
+    </record>
+    
+    <!-- Vue Pivot par Statut -->
+    <record id="view_license_pivot_by_state" model="ir.ui.view">
+        <field name="name">license.license.pivot.by.state</field>
+        <field name="model">license.license</field>
+        <field name="arch" type="xml">
+            <pivot string="Licences par Statut">
+                <field name="client_id" type="row"/>
+                <field name="state" type="col"/>
+                <field name="max_users" type="measure"/>
+            </pivot>
+        </field>
+    </record>
+
+    <!-- Vue Pivot par Date -->
+    <record id="view_license_pivot_by_date" model="ir.ui.view">
+        <field name="name">license.license.pivot.by.date</field>
+        <field name="model">license.license</field>
+        <field name="arch" type="xml">
+            <pivot string="Licences par Date">
+                <field name="issued_at" interval="month" type="row"/>
+                <field name="edition" type="col"/>
+                <field name="max_users" type="measure"/>
+            </pivot>
+        </field>
+    </record>
+</odoo>

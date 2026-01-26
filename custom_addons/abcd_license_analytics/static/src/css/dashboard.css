@@ -1,0 +1,33 @@
+/* Styles pour le dashboard des licences */
+
+.oe_dashboard .card {
+    margin-bottom: 20px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.oe_dashboard .card-header {
+    background-color: #f8f9fa;
+    border-bottom: 1px solid #dee2e6;
+    font-weight: 600;
+}
+
+.oe_dashboard .card-body h2 {
+    margin: 0;
+    font-size: 2.5rem;
+    font-weight: 700;
+}
+
+.oe_dashboard .table {
+    margin-bottom: 0;
+}
+
+.oe_dashboard .table th {
+    border-top: none;
+    font-weight: 600;
+    color: #495057;
+}
+
+.oe_dashboard #chart_edition,
+.oe_dashboard #chart_trends {
+    min-height: 300px;
+}

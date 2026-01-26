@@ -1,0 +1,16 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_lettre_template_user,lettre.motivation.template.user,model_lettre_motivation_template,base.group_user,1,1,1,1
+access_lettre_template_manager,lettre.motivation.template.manager,model_lettre_motivation_template,base.group_system,1,1,1,1
+access_lettre_variable_user,lettre.motivation.variable.user,model_lettre_motivation_variable,base.group_user,1,1,1,1
+access_lettre_instance_user,lettre.motivation.instance.user,model_lettre_motivation_instance,base.group_user,1,1,1,1
+access_lettre_instance_variable_user,lettre.motivation.instance.variable.user,model_lettre_motivation_instance_variable,base.group_user,1,1,1,1
+access_lettre_tableau_user,lettre.motivation.tableau.user,model_lettre_motivation_tableau,base.group_user,1,1,1,1
+access_lettre_tableau_colonne_user,lettre.motivation.tableau.colonne.user,model_lettre_motivation_tableau_colonne,base.group_user,1,1,1,1
+access_lettre_tableau_ligne_user,lettre.motivation.tableau.ligne.user,model_lettre_motivation_tableau_ligne,base.group_user,1,1,1,1
+access_lettre_excel_user,lettre.motivation.excel.source.user,model_lettre_motivation_excel_source,base.group_user,1,1,1,1
+access_lettre_generation_wizard_user,lettre.motivation.generation.wizard.user,model_lettre_motivation_generation_wizard,base.group_user,1,1,1,1
+access_lettre_generation_wizard_variable_user,lettre.motivation.generation.wizard.variable.user,model_lettre_motivation_generation_wizard_variable,base.group_user,1,1,1,1
+access_lettre_selection_wizard_user,lettre.motivation.selection.wizard.user,model_lettre_motivation_selection_wizard,base.group_user,1,1,1,1
+access_lettre_template_binding_user,lettre.motivation.template.binding.user,model_lettre_motivation_template_binding,base.group_user,1,1,1,1
+access_lettre_template_binding_manager,lettre.motivation.template.binding.manager,model_lettre_motivation_template_binding,base.group_system,1,1,1,1
+access_lettre_field_mapping_user,lettre.motivation.field.mapping.user,model_lettre_motivation_field_mapping,base.group_user,1,1,1,1

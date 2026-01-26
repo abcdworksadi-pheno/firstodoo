@@ -1,0 +1,14 @@
+{
+  "issuer": "ABCD",
+  "company": "Client Example SARL",
+  "db_uuid": "550e8400-e29b-41d4-a716-446655440000",
+  "modules": [
+    "abcd_sales_pro",
+    "abcd_inventory_plus",
+    "abcd_crm_advanced"
+  ],
+  "edition": "pro",
+  "expiry": "2026-12-31T23:59:59Z",
+  "max_users": 50,
+  "alias": "ABCD-LIC-CLIENTX-2025"
+}

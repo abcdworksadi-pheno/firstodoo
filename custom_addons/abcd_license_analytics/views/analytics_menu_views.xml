@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Menu Analytics -->
+    <menuitem id="menu_license_analytics"
+              name="Analyses"
+              parent="abcd_license_server.menu_license_root"
+              action="action_license_dashboard"
+              sequence="50"/>
+</odoo>

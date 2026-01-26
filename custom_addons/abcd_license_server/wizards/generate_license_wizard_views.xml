@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_generate_license_wizard_form" model="ir.ui.view">
+        <field name="name">generate.license.wizard.form</field>
+        <field name="model">generate.license.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Générer une Licence">
+                <group>
+                    <field name="client_id"/>
+                    <field name="db_uuid" placeholder="7023665828c65107e1cdbfc7927a80d4cd20795d8b02f76fad427696d50d7d1c"/>
+                    <field name="modules" placeholder="abcd_sales_pro, abcd_inventory_plus"/>
+                    <field name="edition"/>
+                    <field name="expiry_days"/>
+                    <field name="max_users"/>
+                    <field name="auto_generate_alias"/>
+                    <field name="alias" invisible="auto_generate_alias"/>
+                </group>
+                <footer>
+                    <button string="Générer" name="action_generate" type="object" class="btn-primary"/>
+                    <button string="Annuler" class="btn-secondary" special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_generate_license_wizard" model="ir.actions.act_window">
+        <field name="name">Générer une Licence</field>
+        <field name="res_model">generate.license.wizard</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+    </record>
+</odoo>

@@ -1,0 +1,132 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_license_tree" model="ir.ui.view">
+        <field name="name">license.license.tree</field>
+        <field name="model">license.license</field>
+        <field name="arch" type="xml">
+            <list string="Licences">
+                <field name="name"/>
+                <field name="client_id"/>
+                <field name="edition"/>
+                <field name="expiry_date"/>
+                <field name="max_users"/>
+                <field name="issued_at"/>
+                <field name="license_blob" invisible="1"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_license_form" model="ir.ui.view">
+        <field name="name">license.license.form</field>
+        <field name="model">license.license</field>
+        <field name="arch" type="xml">
+            <form string="Licence">
+                <header>
+                    <button name="action_generate_alias" 
+                            type="object" 
+                            string="Générer Alias"
+                            invisible="name"/>
+                    <button name="action_generate_license" 
+                            type="object" 
+                            string="Générer la Licence"
+                            class="oe_highlight"
+                            invisible="license_blob"/>
+                    <button name="action_copy_license_blob" 
+                            type="object" 
+                            string="Copier Blob"
+                            invisible="not license_blob"/>
+                    <button name="action_download_license" 
+                            type="object" 
+                            string="Télécharger Licence"
+                            invisible="not license_blob"/>
+                </header>
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="name"/>
+                            <field name="client_id"/>
+                            <field name="db_uuid" placeholder="Ex: 7023665828c65107e1cdbfc7927a80d4cd20795d8b02f76fad427696d50d7d1c"/>
+                            <field name="edition"/>
+                        </group>
+                        <group>
+                            <field name="expiry_date"/>
+                            <field name="max_users"/>
+                            <field name="issued_at" readonly="1"/>
+                            <field name="issued_by" readonly="1"/>
+                        </group>
+                    </group>
+                    <group string="Modules Autorisés">
+                        <field name="modules" placeholder="abcd_sales_pro, abcd_inventory_plus"/>
+                        <field name="modules_list" widget="text" readonly="1" nolabel="1"/>
+                    </group>
+                    <notebook>
+                        <page string="Blob de Licence" name="blob" invisible="not license_blob">
+                            <div class="alert alert-warning" role="alert">
+                                <strong>Blob de Licence</strong>
+                                <p><strong>Instructions importantes :</strong></p>
+                                <ul>
+                                    <li><strong>Longueur attendue :</strong> environ 400-600 caractères</li>
+                                    <li>Cliquez dans le champ ci-dessous</li>
+                                    <li>Sélectionnez TOUT le texte (Ctrl+A) - <strong>c'est crucial !</strong></li>
+                                    <li>Copiez (Ctrl+C)</li>
+                                    <li>Collez dans le paramètre <code>abcd.license.blob</code> de l'instance Odoo cliente</li>
+                                    <li><strong>⚠️ Vérifiez que vous avez copié TOUT le blob (du début à la fin)</strong></li>
+                                    <li>Le blob doit se terminer par des caractères alphanumériques ou <code>=</code></li>
+                                </ul>
+                                <p><strong>Astuce :</strong> Utilisez le bouton "Télécharger Licence" pour obtenir un fichier texte avec le blob complet.</p>
+                            </div>
+                            <field name="license_blob_length" readonly="1" invisible="not license_blob"/>
+                            <field name="license_blob" 
+                                   widget="text" 
+                                   readonly="1" 
+                                   nolabel="1"
+                                   placeholder="Le blob de licence apparaîtra ici après génération"
+                                   options="{'wrap': 'off'}"/>
+                            <div class="alert alert-info" role="alert" invisible="not license_blob">
+                                <strong>Longueur du blob :</strong> <field name="license_blob_length"/> caractères
+                                <br/>
+                                <strong>Longueur attendue :</strong> 400-600 caractères (si moins, le blob est incomplet)
+                            </div>
+                        </page>
+                        <page string="Informations" name="info">
+                            <field name="public_key_hex" readonly="1"/>
+                            <field name="key_id" readonly="1"/>
+                            <field name="notes" placeholder="Notes internes sur cette licence..."/>
+                        </page>
+                    </notebook>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="view_license_search" model="ir.ui.view">
+        <field name="name">license.license.search</field>
+        <field name="model">license.license</field>
+        <field name="arch" type="xml">
+            <search string="Licences">
+                <field name="name"/>
+                <field name="client_id"/>
+                <field name="db_uuid"/>
+                <filter string="Expirées" name="expired" domain="[('expiry_date', '&lt;', context_today().strftime('%Y-%m-%d'))]"/>
+                <filter string="Valides" name="valid" domain="[('expiry_date', '&gt;', context_today().strftime('%Y-%m-%d'))]"/>
+                <filter string="Pro" name="pro" domain="[('edition', '=', 'pro')]"/>
+            </search>
+        </field>
+    </record>
+
+    <record id="license_license_action" model="ir.actions.act_window">
+        <field name="name">Licences</field>
+        <field name="res_model">license.license</field>
+        <field name="view_mode">kanban,list,graph,pivot,form</field>
+        <field name="context">{}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Générez votre première licence
+            </p>
+            <p>
+                Les licences sont générées pour des clients spécifiques et des bases de données Odoo.
+                Utilisez le bouton "Générer la Licence" pour créer le blob de licence.
+            </p>
+        </field>
+    </record>
+</odoo>

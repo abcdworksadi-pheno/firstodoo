@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <!-- Template QWeb pour le rendu des lettres -->
+        <template id="template_lettre_motivation_base" name="Template Base Lettre de Motivation">
+            <t t-call="web.html_container">
+                <div class="oe_structure">
+                    <div class="container">
+                        <t t-raw="0"/>
+                    </div>
+                </div>
+            </t>
+        </template>
+
+        <!-- Template pour les tableaux dynamiques -->
+        <template id="template_tableau_dynamique" name="Tableau Dynamique">
+            <table class="table table-bordered">
+                <thead>
+                    <tr>
+                        <t t-foreach="colonnes" t-as="col">
+                            <th t-att-style="col.width ? 'width: %s' % col.width : ''">
+                                <t t-esc="col.label"/>
+                            </th>
+                        </t>
+                    </tr>
+                </thead>
+                <tbody>
+                    <t t-foreach="lignes" t-as="ligne">
+                        <tr>
+                            <t t-foreach="colonnes" t-as="col">
+                                <td>
+                                    <t t-esc="ligne.get(col.name, '')"/>
+                                </td>
+                            </t>
+                        </tr>
+                    </t>
+                </tbody>
+            </table>
+        </template>
+    </data>
+</odoo>

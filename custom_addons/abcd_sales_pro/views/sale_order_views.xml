@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_sale_order_form_abcd" model="ir.ui.view">
+        <field name="name">sale.order.form.abcd</field>
+        <field name="model">sale.order</field>
+        <field name="inherit_id" ref="sale.view_order_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='note']" position="after">
+                <field name="abcd_pro_notes" 
+                       placeholder="Notes réservées à l'édition Pro ABCD"/>
+            </xpath>
+            <xpath expr="//button[@name='action_confirm']" position="after">
+                <button name="action_abcd_pro_report"
+                        string="Rapport Pro ABCD"
+                        type="object"
+                        class="btn-primary"
+                        groups="base.group_user"/>
+            </xpath>
+        </field>
+    </record>
+</odoo>

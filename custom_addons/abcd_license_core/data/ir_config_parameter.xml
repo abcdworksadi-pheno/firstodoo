@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+        <!-- Configuration de la clé publique ABCD (à remplacer par la vraie clé) -->
+        <record id="config_public_key" model="ir.config_parameter">
+            <field name="key">abcd.license.public_key_hex</field>
+            <field name="value">0000000000000000000000000000000000000000000000000000000000000000</field>
+        </record>
+        
+        <!-- Période de grâce en jours (défaut: 7) -->
+        <record id="config_grace_period" model="ir.config_parameter">
+            <field name="key">abcd.license.grace_period_days</field>
+            <field name="value">7</field>
+        </record>
+        
+        <!-- Blob de licence (à configurer par l'administrateur) -->
+        <record id="config_license_blob" model="ir.config_parameter">
+            <field name="key">abcd.license.blob</field>
+            <field name="value"></field>
+        </record>
+    </data>
+</odoo>

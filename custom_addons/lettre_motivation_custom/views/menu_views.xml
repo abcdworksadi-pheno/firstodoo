@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <!-- Menu principal -->
+        <menuitem id="menu_lettre_motivation_root" 
+                  name="Lettres de Motivation" 
+                  sequence="100"/>
+
+        <!-- Menu Modèles -->
+        <menuitem id="menu_lettre_template" 
+                  name="Modèles" 
+                  parent="menu_lettre_motivation_root"
+                  action="action_lettre_template"
+                  sequence="10"/>
+
+        <!-- Menu Lettres Générées -->
+        <menuitem id="menu_lettre_instance" 
+                  name="Lettres Générées" 
+                  parent="menu_lettre_motivation_root"
+                  action="action_lettre_instance"
+                  sequence="20"/>
+
+        <!-- Menu Tableaux -->
+        <menuitem id="menu_lettre_tableau" 
+                  name="Tableaux" 
+                  parent="menu_lettre_motivation_root"
+                  action="action_lettre_tableau"
+                  sequence="30"/>
+
+        <!-- Menu Sources Excel -->
+        <menuitem id="menu_lettre_excel" 
+                  name="Sources Excel" 
+                  parent="menu_lettre_motivation_root"
+                  action="action_lettre_excel"
+                  sequence="40"/>
+    </data>
+</odoo>
+

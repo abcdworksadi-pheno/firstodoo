@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Vue Kanban pour les Licences -->
+    <record id="view_license_kanban" model="ir.ui.view">
+        <field name="name">license.license.kanban</field>
+        <field name="model">license.license</field>
+        <field name="arch" type="xml">
+            <kanban default_group_by="state" class="o_kanban_small_column">
+                <field name="name"/>
+                <field name="client_id"/>
+                <field name="edition"/>
+                <field name="expiry_date"/>
+                <field name="state"/>
+                <field name="days_until_expiry"/>
+                <field name="module_count"/>
+                <field name="max_users"/>
+                <field name="license_blob"/>
+                <progressbar field="state" colors='{"draft": "secondary", "active": "success", "expiring_soon": "warning", "expired": "danger"}'/>
+                <templates>
+                    <t t-name="kanban-box">
+                        <div class="oe_kanban_card oe_kanban_global_click">
+                            <div class="o_kanban_card_header">
+                                <div class="o_kanban_card_header_title">
+                                    <div class="o_primary">
+                                        <field name="name"/>
+                                    </div>
+                                    <div class="o_secondary">
+                                        <field name="client_id"/>
+                                    </div>
+                                </div>
+                                <div class="o_kanban_card_header_top_right">
+                                    <span t-att-class="record.edition.raw_value === 'enterprise' ? 'badge badge-pill badge-danger' : record.edition.raw_value === 'pro' ? 'badge badge-pill badge-warning' : 'badge badge-pill badge-info'">
+                                        <field name="edition"/>
+                                    </span>
+                                </div>
+                            </div>
+                            <div class="o_kanban_card_content">
+                                <div class="row">
+                                    <div class="col-6">
+                                        <div class="text-muted small">Expiration</div>
+                                        <div>
+                                            <field name="expiry_date" widget="date"/>
+                                        </div>
+                                    </div>
+                                    <div class="col-6">
+                                        <div class="text-muted small">Jours restants</div>
+                                        <div>
+                                            <span t-att-class="record.days_until_expiry.raw_value &lt; 0 ? 'text-danger' : record.days_until_expiry.raw_value &lt;= 30 ? 'text-warning' : 'text-success'">
+                                                <field name="days_until_expiry"/> jours
+                                            </span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row mt-2">
+                                    <div class="col-6">
+                                        <div class="text-muted small">Modules</div>
+                                        <div>
+                                            <field name="module_count"/> modules
+                                        </div>
+                                    </div>
+                                    <div class="col-6">
+                                        <div class="text-muted small">Utilisateurs max</div>
+                                        <div>
+                                            <field name="max_users" widget="integer"/>
+                                            <span t-if="record.max_users.raw_value === 0">(illimité)</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="o_kanban_card_footer" invisible="not license_blob">
+                                <span class="badge badge-success">Licence générée</span>
+                            </div>
+                        </div>
+                    </t>
+                </templates>
+            </kanban>
+        </field>
+    </record>
+</odoo>

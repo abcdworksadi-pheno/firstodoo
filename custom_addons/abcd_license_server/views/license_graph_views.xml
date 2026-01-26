@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Vue Graphique pour les Licences -->
+    <record id="view_license_graph" model="ir.ui.view">
+        <field name="name">license.license.graph</field>
+        <field name="model">license.license</field>
+        <field name="arch" type="xml">
+            <graph string="Analyse des Licences" type="bar" stacked="True">
+                <field name="state" type="row"/>
+                <field name="edition" type="row"/>
+                <field name="id" type="measure"/>
+            </graph>
+        </field>
+    </record>
+
+    <!-- Vue Graphique par Client -->
+    <record id="view_license_graph_by_client" model="ir.ui.view">
+        <field name="name">license.license.graph.by.client</field>
+        <field name="model">license.license</field>
+        <field name="arch" type="xml">
+            <graph string="Licences par Client" type="bar">
+                <field name="client_id" type="row"/>
+                <field name="id" type="measure"/>
+            </graph>
+        </field>
+    </record>
+
+    <!-- Vue Graphique par Édition -->
+    <record id="view_license_graph_by_edition" model="ir.ui.view">
+        <field name="name">license.license.graph.by.edition</field>
+        <field name="model">license.license</field>
+        <field name="arch" type="xml">
+            <graph string="Licences par Édition" type="pie">
+                <field name="edition" type="row"/>
+                <field name="id" type="measure"/>
+            </graph>
+        </field>
+    </record>
+
+    <!-- Vue Graphique Expiration -->
+    <record id="view_license_graph_expiry" model="ir.ui.view">
+        <field name="name">license.license.graph.expiry</field>
+        <field name="model">license.license</field>
+        <field name="arch" type="xml">
+            <graph string="Licences par Statut d'Expiration" type="bar">
+                <field name="state" type="row"/>
+                <field name="id" type="measure"/>
+            </graph>
+        </field>
+    </record>
+</odoo>

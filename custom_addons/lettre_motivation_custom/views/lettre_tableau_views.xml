@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <!-- Vue liste des tableaux -->
+        <record id="view_lettre_tableau_tree" model="ir.ui.view">
+            <field name="name">lettre.motivation.tableau.tree</field>
+            <field name="model">lettre.motivation.tableau</field>
+            <field name="arch" type="xml">
+                <list string="Tableaux">
+                    <field name="name"/>
+                    <field name="template_id"/>
+                    <field name="variable_name"/>
+                    <field name="sequence" widget="handle"/>
+                </list>
+            </field>
+        </record>
+
+        <!-- Vue formulaire des tableaux -->
+        <record id="view_lettre_tableau_form" model="ir.ui.view">
+            <field name="name">lettre.motivation.tableau.form</field>
+            <field name="model">lettre.motivation.tableau</field>
+            <field name="arch" type="xml">
+                <form string="Tableau Dynamique">
+                    <sheet>
+                        <group>
+                            <group>
+                                <field name="name"/>
+                                <field name="template_id"/>
+                                <field name="variable_name"/>
+                                <field name="sequence"/>
+                            </group>
+                            <group>
+                                <field name="source_excel_id" domain="[('tableau_id', '=', False)]"/>
+                                <field name="active"/>
+                            </group>
+                        </group>
+                        <notebook>
+                            <page string="Colonnes" name="colonnes">
+                                <field name="colonnes_ids" nolabel="1">
+                                    <list string="Colonnes" editable="bottom">
+                                        <field name="name"/>
+                                        <field name="label"/>
+                                        <field name="type_colonne"/>
+                                        <field name="width"/>
+                                        <field name="sequence" widget="handle"/>
+                                    </list>
+                                </field>
+                            </page>
+                            <page string="Lignes" name="lignes">
+                                <field name="lignes_ids" nolabel="1">
+                                    <list string="Lignes" editable="bottom">
+                                        <field name="sequence" widget="handle"/>
+                                        <field name="valeurs" widget="text"/>
+                                    </list>
+                                </field>
+                            </page>
+                        </notebook>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+
+        <!-- Action pour les tableaux -->
+        <record id="action_lettre_tableau" model="ir.actions.act_window">
+            <field name="name">Tableaux Dynamiques</field>
+            <field name="res_model">lettre.motivation.tableau</field>
+            <field name="view_mode">list,form</field>
+        </record>
+    </data>
+</odoo>
+
