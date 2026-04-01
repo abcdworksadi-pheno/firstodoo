@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 {
-    'name': "lettre de mission kof",
+    'name': "Lettre de Motivation Personnalisée",
 
     'summary': "Génération de lettres de motivation avec injection de variables dynamiques",
 
@@ -28,10 +28,10 @@ Fonctionnalités :
     'website': "https://www.yourcompany.com",
 
     'category': 'Human Resources',
-    'version': '1.0.2',
+    'version': '1.0.1',
 
     # any module necessary for this one to work correctly
-    'depends': ['base', 'web', 'mail', 'sale'],
+    'depends': ['base', 'web', 'mail'],
 
     # always loaded
     'data': [
@@ -45,7 +45,6 @@ Fonctionnalités :
         'views/wizard_views.xml',
         'views/menu_views.xml',
         'views/templates.xml',
-        'views/sale_order_views.xml',  # Charger en dernier pour s'assurer que sale.order est bien chargé
     ],
     # only loaded in demonstration mode
     'demo': [

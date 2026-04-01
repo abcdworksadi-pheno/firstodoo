@@ -95,6 +95,7 @@
                         </page>
                     </notebook>
                 </sheet>
+                <chatter/>
             </form>
         </field>
     </record>
@@ -113,6 +114,21 @@
             </search>
         </field>
     </record>
+
+    <!-- Vue Map (Désactivée car nécessite Enterprise / web_map)
+    <record id="view_license_map" model="ir.ui.view">
+        <field name="name">license.license.map</field>
+        <field name="model">license.license</field>
+        <field name="arch" type="xml">
+            <map res_partner="partner_id">
+                <field name="name" string="Licence"/>
+                <field name="client_id"/>
+                <field name="edition"/>
+                <field name="expiry_date"/>
+            </map>
+        </field>
+    </record>
+    -->
 
     <record id="license_license_action" model="ir.actions.act_window">
         <field name="name">Licences</field>

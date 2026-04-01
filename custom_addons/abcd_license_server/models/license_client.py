@@ -13,10 +13,12 @@ class LicenseClient(models.Model):
     _name = 'license.client'
     _description = 'ABCD License Client'
     _order = 'name'
+    _inherit = ['mail.thread', 'mail.activity.mixin']
     
     name = fields.Char(
         string="Nom du Client",
         required=True,
+        tracking=True,
         help="Nom de l'entreprise cliente"
     )
     
@@ -25,6 +27,7 @@ class LicenseClient(models.Model):
         required=True,
         copy=False,
         index=True,
+        tracking=True,
         help="Code unique du client (ex: CLIENTX)"
     )
     
@@ -35,17 +38,26 @@ class LicenseClient(models.Model):
     
     email = fields.Char(
         string="Email",
+        tracking=True,
         help="Email de contact"
     )
     
     phone = fields.Char(
         string="Téléphone",
+        tracking=True,
         help="Numéro de téléphone"
+    )
+    
+    partner_id = fields.Many2one(
+        'res.partner',
+        string="Contact / Adresse",
+        help="Lien vers le contact pour localisation"
     )
     
     active = fields.Boolean(
         string="Actif",
-        default=True
+        default=True,
+        tracking=True
     )
     
     license_ids = fields.One2many(
@@ -73,6 +85,13 @@ class LicenseClient(models.Model):
         for record in self:
             if self.search_count([('code', '=', record.code), ('id', '!=', record.id)]):
                 raise ValidationError(_("Le code client '%s' existe déjà.") % record.code)
+    
+    def action_view_licenses(self):
+        self.ensure_one()
+        action = self.env["ir.actions.actions"]._for_xml_id("abcd_license_server.action_license")
+        action['domain'] = [('client_id', '=', self.id)]
+        action['context'] = {'default_client_id': self.id}
+        return action
     
     _sql_constraints = [
         ('code_unique', 'UNIQUE(code)', 'Le code client doit être unique.')

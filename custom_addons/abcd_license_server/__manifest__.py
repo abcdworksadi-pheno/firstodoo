@@ -26,11 +26,12 @@ pour la gestion des licences en production.
     'website': "https://www.abcd.com",
     'category': 'Tools',
     'version': '1.0.0',
-    'depends': ['base', 'web'],
+    'depends': ['base', 'web', 'mail'],
     'data': [
         'security/ir.model.access.csv',
         'security/security.xml',
         'data/ir_sequence.xml',
+        'data/ir_cron.xml',
         'views/license_client_views.xml',
         'views/license_client_kanban_views.xml',
         'views/license_key_views.xml',

@@ -20,7 +20,7 @@ Ce module nécessite une licence ABCD valide.
     'website': "https://www.abcd.com",
     'category': 'ABCD',
     'version': '1.0.0',
-    'depends': ['base', 'sale', 'abcd_license_core'],
+    'depends': ['base', 'sale', 'abcd_license_guard', 'abcd_license_core'],
     'data': [
         'security/ir.model.access.csv',
         'views/sale_order_views.xml',

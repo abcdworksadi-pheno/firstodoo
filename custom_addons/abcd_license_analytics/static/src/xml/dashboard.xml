@@ -1,0 +1,177 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+    <t t-name="abcd_license_analytics.DashboardWidget" owl="1">
+        <div class="oe_dashboard p-3 h-100 overflow-auto">
+            <!-- Statistiques Globales -->
+            <div class="row">
+                <div class="col-lg-3 col-md-6 mb-3">
+                    <div class="card h-100">
+                        <div class="card-body">
+                            <h5 class="card-title text-muted">Total Licences</h5>
+                            <h2 class="text-primary"><t t-esc="state.stats.total || 0"/></h2>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-md-6 mb-3">
+                    <div class="card h-100">
+                        <div class="card-body">
+                            <h5 class="card-title text-muted">Licences Actives</h5>
+                            <h2 class="text-success"><t t-esc="state.stats.active || 0"/></h2>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-md-6 mb-3">
+                    <div class="card h-100">
+                        <div class="card-body">
+                            <h5 class="card-title text-muted">Expirées</h5>
+                            <h2 class="text-danger"><t t-esc="state.stats.expired || 0"/></h2>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-md-6 mb-3">
+                    <div class="card h-100">
+                        <div class="card-body">
+                            <h5 class="card-title text-muted">Expirent Bientôt</h5>
+                            <h2 class="text-warning"><t t-esc="state.stats.expiring_soon || 0"/></h2>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Graphiques -->
+            <div class="row mt-3">
+                <div class="col-lg-6 mb-3">
+                    <div class="card h-100">
+                        <div class="card-header bg-white">
+                            <h5 class="mb-0">Répartition par Édition</h5>
+                        </div>
+                        <div class="card-body">
+                            <div t-if="!state.editionData || Object.keys(state.editionData).length === 0" class="text-center text-muted py-5">
+                                <t t-if="state.loading">Chargement...</t>
+                                <t t-else="">Aucune donnée</t>
+                            </div>
+                            <div t-else="" style="height: 300px; position: relative;">
+                                <canvas t-ref="chart_edition"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-6 mb-3">
+                    <div class="card h-100">
+                        <div class="card-header bg-white">
+                            <h5 class="mb-0">Tendances (12 derniers mois)</h5>
+                        </div>
+                        <div class="card-body">
+                            <div t-if="!state.trendsData || state.trendsData.length === 0" class="text-center text-muted py-5">
+                                <t t-if="state.loading">Chargement...</t>
+                                <t t-else="">Aucune donnée</t>
+                            </div>
+                            <div t-else="" style="height: 300px; position: relative;">
+                                <canvas t-ref="chart_trends"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Top Clients et Modules -->
+            <div class="row mt-3">
+                <div class="col-lg-6 mb-3">
+                    <div class="card h-100">
+                        <div class="card-header bg-white">
+                            <h5 class="mb-0">Top 10 Clients</h5>
+                        </div>
+                        <div class="card-body p-0">
+                            <table class="table table-hover mb-0">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th>Client</th>
+                                        <th class="text-end">Licences</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr t-if="!state.clientsData || state.clientsData.length === 0">
+                                        <td colspan="2" class="text-center text-muted py-3">
+                                            <t t-if="state.loading">Chargement...</t>
+                                            <t t-else="">Aucune donnée</t>
+                                        </td>
+                                    </tr>
+                                    <tr t-foreach="state.clientsData" t-as="client" t-key="client.code">
+                                        <td><t t-esc="client.name"/> (<t t-esc="client.code"/>)</td>
+                                        <td class="text-end"><t t-esc="client.count"/></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-6 mb-3">
+                    <div class="card h-100">
+                        <div class="card-header bg-white">
+                            <h5 class="mb-0">Modules les Plus Utilisés</h5>
+                        </div>
+                        <div class="card-body p-0">
+                            <table class="table table-hover mb-0">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th>Module</th>
+                                        <th class="text-end">Utilisations</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr t-if="!state.modulesData || state.modulesData.length === 0">
+                                        <td colspan="2" class="text-center text-muted py-3">
+                                            <t t-if="state.loading">Chargement...</t>
+                                            <t t-else="">Aucune donnée</t>
+                                        </td>
+                                    </tr>
+                                    <tr t-foreach="state.modulesData" t-as="mod" t-key="mod.module">
+                                        <td><t t-esc="mod.module"/></td>
+                                        <td class="text-end"><t t-esc="mod.count"/></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Licences Expirant Bientôt -->
+            <div class="row mt-3">
+                <div class="col-12 mb-3">
+                    <div class="card">
+                        <div class="card-header bg-white">
+                            <h5 class="mb-0">Licences Expirant dans les 30 Prochains Jours</h5>
+                        </div>
+                        <div class="card-body p-0">
+                            <table class="table table-hover mb-0">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th>Licence</th>
+                                        <th>Client</th>
+                                        <th>Date d'Expiration</th>
+                                        <th>Jours Restants</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr t-if="!state.expiringData || state.expiringData.length === 0">
+                                        <td colspan="4" class="text-center text-muted py-3">
+                                            <t t-if="state.loading">Chargement...</t>
+                                            <t t-else="">Aucune licence n'expire prochainement</t>
+                                        </td>
+                                    </tr>
+                                    <tr t-foreach="state.expiringData" t-as="lic" t-key="lic.name">
+                                        <td><t t-esc="lic.name"/></td>
+                                        <td><t t-esc="lic.client"/></td>
+                                        <td><t t-esc="lic.expiry_date"/></td>
+                                        <td><span class="badge text-bg-warning"><t t-esc="lic.days_left"/> jours</span></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </t>
+</templates>

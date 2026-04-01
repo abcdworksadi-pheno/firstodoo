@@ -19,7 +19,7 @@ Fonctionnalités :
 * Surveillance en temps réel
     """,
     'author': "ABCD",
-    'website': "https://www.abcd.com",
+    'website': "https://www.abcd-group.com",
     'category': 'Tools',
     'version': '1.0.0',
     'depends': ['abcd_license_server', 'web'],
@@ -30,6 +30,7 @@ Fonctionnalités :
     ],
     'assets': {
         'web.assets_backend': [
+            'abcd_license_analytics/static/src/xml/dashboard.xml',
             'abcd_license_analytics/static/src/js/dashboard_widget.js',
             'abcd_license_analytics/static/src/css/dashboard.css',
         ],

@@ -21,17 +21,20 @@ class LicenseKey(models.Model):
     _name = 'license.key'
     _description = 'ABCD License Key Pair'
     _order = 'create_date desc'
+    _inherit = ['mail.thread', 'mail.activity.mixin']
     
     name = fields.Char(
         string="Nom",
         required=True,
         default="Nouvelle paire de clés",
+        tracking=True,
         help="Nom descriptif de cette paire de clés"
     )
     
     active = fields.Boolean(
         string="Active",
         default=True,
+        tracking=True,
         help="Seule la clé active est utilisée pour générer de nouvelles licences"
     )
     

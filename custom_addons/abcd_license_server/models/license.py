@@ -26,11 +26,13 @@ class License(models.Model):
     _name = 'license.license'
     _description = 'ABCD License'
     _order = 'create_date desc'
+    _inherit = ['mail.thread', 'mail.activity.mixin']
     
     name = fields.Char(
         string="Alias",
         required=True,
         index=True,
+        tracking=True,
         help="Alias lisible de la licence (ex: ABCD-LIC-CLIENTX-2025)"
     )
     
@@ -40,6 +42,13 @@ class License(models.Model):
         required=True,
         ondelete='restrict',
         help="Client pour lequel cette licence est générée"
+    )
+    
+    partner_id = fields.Many2one(
+        'res.partner',
+        string="Adresse Client",
+        related="client_id.partner_id",
+        store=True
     )
     
     db_uuid = fields.Char(
@@ -73,6 +82,7 @@ class License(models.Model):
     expiry_date = fields.Datetime(
         string="Date d'Expiration",
         required=True,
+        tracking=True,
         help="Date et heure d'expiration de la licence (UTC)"
     )
     
@@ -132,7 +142,7 @@ class License(models.Model):
         ('active', 'Active'),
         ('expired', 'Expirée'),
         ('expiring_soon', 'Expire Bientôt'),
-    ], string="Statut", compute='_compute_state', store=True, index=True)
+    ], string="Statut", compute='_compute_state', store=True, index=True, tracking=True)
     
     days_until_expiry = fields.Integer(
         string="Jours jusqu'à Expiration",
@@ -197,6 +207,18 @@ class License(models.Model):
                 record.days_until_expiry = delta.days
             else:
                 record.days_until_expiry = 0
+                
+    @api.model
+    def _update_license_states_cron(self):
+        """Met à jour les statuts des licences tous les jours"""
+        licenses_to_update = self.search([('state', 'in', ['active', 'expiring_soon'])])
+        if licenses_to_update:
+            # Force la recomputation des champs stockés qui dépendent du temps
+            self.env.add_to_compute(self._fields['state'], licenses_to_update)
+            self.env.add_to_compute(self._fields['days_until_expiry'], licenses_to_update)
+            self.env.add_to_compute(self._fields['is_expired'], licenses_to_update)
+            self.env.add_to_compute(self._fields['is_expiring_soon'], licenses_to_update)
+
     
     @api.depends('modules')
     def _compute_module_count(self):
